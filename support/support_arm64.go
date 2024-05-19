@@ -12,5 +12,4 @@ import (
 	_ "embed"
 )
 
-//go:embed ebpf/tracer.ebpf.arm64
 var tracerData []byte
