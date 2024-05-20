@@ -9,8 +9,8 @@
 // stack delta information that is used in all relevant packages.
 package stackdeltatypes
 
-// #include "../../../support/ebpf/stackdeltatypes.h"
-import "C"
+// // #include "../../../support/ebpf/stackdeltatypes.h"
+// import "C"
 
 const (
 	// ABI is the current binary compatibility version. It is incremented
@@ -23,22 +23,22 @@ const (
 	MinimumGap = 15
 
 	// UnwindOpcodes from the C header file
-	UnwindOpcodeCommand   uint8 = C.UNWIND_OPCODE_COMMAND
-	UnwindOpcodeBaseCFA   uint8 = C.UNWIND_OPCODE_BASE_CFA
-	UnwindOpcodeBaseSP    uint8 = C.UNWIND_OPCODE_BASE_SP
-	UnwindOpcodeBaseFP    uint8 = C.UNWIND_OPCODE_BASE_FP
-	UnwindOpcodeBaseLR    uint8 = C.UNWIND_OPCODE_BASE_LR
-	UnwindOpcodeFlagDeref uint8 = C.UNWIND_OPCODEF_DEREF
+	UnwindOpcodeCommand   uint8 = 0x00
+	UnwindOpcodeBaseCFA   uint8 = 0x01
+	UnwindOpcodeBaseSP    uint8 = 0x02
+	UnwindOpcodeBaseFP    uint8 = 0x03
+	UnwindOpcodeBaseLR    uint8 = 0x04
+	UnwindOpcodeFlagDeref uint8 = 0x80
 
 	// UnwindCommands from the C header file
-	UnwindCommandInvalid int32 = C.UNWIND_COMMAND_INVALID
-	UnwindCommandStop    int32 = C.UNWIND_COMMAND_STOP
-	UnwindCommandPLT     int32 = C.UNWIND_COMMAND_PLT
-	UnwindCommandSignal  int32 = C.UNWIND_COMMAND_SIGNAL
+	UnwindCommandInvalid int32 = 0
+	UnwindCommandStop    int32 = 1
+	UnwindCommandPLT     int32 = 2
+	UnwindCommandSignal  int32 = 3
 
 	// UnwindDeref handling from the C header file
-	UnwindDerefMask       int32 = C.UNWIND_DEREF_MASK
-	UnwindDerefMultiplier int32 = C.UNWIND_DEREF_MULTIPLIER
+	UnwindDerefMask       int32 = 7
+	UnwindDerefMultiplier int32 = 8
 
 	// UnwindHintNone indicates that no flags are set.
 	UnwindHintNone uint8 = 0

@@ -7,58 +7,58 @@
 // support maps the definitions from headers in the C world into a nice go way
 package support
 
-/*
-#include "./ebpf/types.h"
-#include "./ebpf/frametypes.h"
-*/
-import "C"
+// /*
+// #include "./ebpf/types.h"
+// #include "./ebpf/frametypes.h"
+// */
+// import "C"
 import "fmt"
 
 const (
-	FrameMarkerUnknown  = C.FRAME_MARKER_UNKNOWN
-	FrameMarkerErrorBit = C.FRAME_MARKER_ERROR_BIT
-	FrameMarkerPython   = C.FRAME_MARKER_PYTHON
-	FrameMarkerNative   = C.FRAME_MARKER_NATIVE
-	FrameMarkerPHP      = C.FRAME_MARKER_PHP
-	FrameMarkerPHPJIT   = C.FRAME_MARKER_PHP_JIT
-	FrameMarkerKernel   = C.FRAME_MARKER_KERNEL
-	FrameMarkerHotSpot  = C.FRAME_MARKER_HOTSPOT
-	FrameMarkerRuby     = C.FRAME_MARKER_RUBY
-	FrameMarkerPerl     = C.FRAME_MARKER_PERL
-	FrameMarkerV8       = C.FRAME_MARKER_V8
-	FrameMarkerAbort    = C.FRAME_MARKER_ABORT
+	FrameMarkerUnknown  = 0
+	FrameMarkerErrorBit = 1
+	FrameMarkerPython   = 2
+	FrameMarkerNative   = 3
+	FrameMarkerPHP      = 4
+	FrameMarkerPHPJIT   = 5
+	FrameMarkerKernel   = 6
+	FrameMarkerHotSpot  = 7
+	FrameMarkerRuby     = 8
+	FrameMarkerPerl     = 9
+	FrameMarkerV8       = 10
+	FrameMarkerAbort    = 11
 )
 
 const (
-	ProgUnwindStop    = C.PROG_UNWIND_STOP
-	ProgUnwindNative  = C.PROG_UNWIND_NATIVE
-	ProgUnwindHotspot = C.PROG_UNWIND_HOTSPOT
-	ProgUnwindPython  = C.PROG_UNWIND_PYTHON
-	ProgUnwindPHP     = C.PROG_UNWIND_PHP
-	ProgUnwindRuby    = C.PROG_UNWIND_RUBY
-	ProgUnwindPerl    = C.PROG_UNWIND_PERL
-	ProgUnwindV8      = C.PROG_UNWIND_V8
+	ProgUnwindStop    = 0
+	ProgUnwindNative  = 1
+	ProgUnwindHotspot = 2
+	ProgUnwindPython  = 3
+	ProgUnwindPHP     = 4
+	ProgUnwindRuby    = 5
+	ProgUnwindPerl    = 6
+	ProgUnwindV8      = 7
 )
 
 const (
-	DeltaCommandFlag = C.STACK_DELTA_COMMAND_FLAG
+	DeltaCommandFlag = 0
 
-	MergeOpcodeNegative = C.MERGEOPCODE_NEGATIVE
+	MergeOpcodeNegative = 0
 )
 
 const (
-	EventTypeGenericPID = C.EVENT_TYPE_GENERIC_PID
+	EventTypeGenericPID = 0
 )
 
-const MaxFrameUnwinds = C.MAX_FRAME_UNWINDS
+const MaxFrameUnwinds = 0
 
 const (
-	MetricIDBeginCumulative = C.metricID_BeginCumulative
+	MetricIDBeginCumulative = 0
 )
 
 const (
-	BitWidthPID  = C.BIT_WIDTH_PID
-	BitWidthPage = C.BIT_WIDTH_PAGE
+	BitWidthPID  = 0
+	BitWidthPage = 1
 )
 
 // EncodeBiasAndUnwindProgram encodes a bias_and_unwind_program value (for C.PIDPageMappingInfo)
@@ -84,31 +84,31 @@ func DecodeBiasAndUnwindProgram(biasAndUnwindProgram uint64) (bias uint64, unwin
 const (
 	// CodedumpBytes holds the number of bytes of code to extract to userspace via codedump helper.
 	// Needed for fsbase offset calculations.
-	CodedumpBytes = C.CODEDUMP_BYTES
+	CodedumpBytes = 0
 )
 
 const (
 	// StackDeltaBucket[Smallest|Largest] define the boundaries of the bucket sizes of the various
 	// nested stack delta maps.
-	StackDeltaBucketSmallest = C.STACK_DELTA_BUCKET_SMALLEST
-	StackDeltaBucketLargest  = C.STACK_DELTA_BUCKET_LARGEST
+	StackDeltaBucketSmallest = 0
+	StackDeltaBucketLargest  = 1
 
 	// StackDeltaPage[Bits|Mask] determine the paging size of stack delta map information
-	StackDeltaPageBits = C.STACK_DELTA_PAGE_BITS
-	StackDeltaPageMask = C.STACK_DELTA_PAGE_MASK
+	StackDeltaPageBits = 0
+	StackDeltaPageMask = 1
 )
 
 const (
-	HSTSIDIsStubBit       = C.HS_TSID_IS_STUB_BIT
-	HSTSIDHasFrameBit     = C.HS_TSID_HAS_FRAME_BIT
-	HSTSIDStackDeltaBit   = C.HS_TSID_STACK_DELTA_BIT
-	HSTSIDStackDeltaMask  = C.HS_TSID_STACK_DELTA_MASK
-	HSTSIDStackDeltaScale = C.HS_TSID_STACK_DELTA_SCALE
-	HSTSIDSegMapBit       = C.HS_TSID_SEG_MAP_BIT
-	HSTSIDSegMapMask      = C.HS_TSID_SEG_MAP_MASK
+	HSTSIDIsStubBit       = 0
+	HSTSIDHasFrameBit     = 1
+	HSTSIDStackDeltaBit   = 2
+	HSTSIDStackDeltaMask  = 3
+	HSTSIDStackDeltaScale = 4
+	HSTSIDSegMapBit       = 5
+	HSTSIDSegMapMask      = 6
 )
 
 const (
 	// PerfMaxStackDepth is the bpf map data array length for BPF_MAP_TYPE_STACK_TRACE traces
-	PerfMaxStackDepth = C.PERF_MAX_STACK_DEPTH
+	PerfMaxStackDepth = 0
 )
