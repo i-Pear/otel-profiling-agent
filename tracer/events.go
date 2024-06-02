@@ -168,12 +168,9 @@ func startPollingPerfEventMonitor(ctx context.Context, perfEventMap *ebpf.Map,
 				break PollLoop
 			}
 
-			fmt.Println("PollLoop ticked")
-
 			// Eagerly read events until the buffer is exhausted.
 			for {
 				if err = eventReader.ReadInto(&data); err != nil {
-					fmt.Println(err.Error())
 					if !errors.Is(err, os.ErrDeadlineExceeded) {
 						readErrorCount.Add(1)
 					}
