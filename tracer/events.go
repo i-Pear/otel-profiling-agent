@@ -9,6 +9,7 @@ package tracer
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"sync/atomic"
 	"time"
@@ -140,6 +141,7 @@ func startPerfEventMonitor(ctx context.Context, perfEventMap *ebpf.Map,
 func startPollingPerfEventMonitor(ctx context.Context, perfEventMap *ebpf.Map,
 	pollFrequency time.Duration, perCPUBufferSize int, triggerFunc func([]byte),
 ) func() (lost, noData, readError uint64) {
+	fmt.Println("startPollingPerfEventMonitor called")
 	eventReader, err := perf.NewReader(perfEventMap, perCPUBufferSize)
 	if err != nil {
 		log.Fatalf("Failed to setup perf reporting via %s: %v", perfEventMap, err)
@@ -151,6 +153,7 @@ func startPollingPerfEventMonitor(ctx context.Context, perfEventMap *ebpf.Map,
 	eventReader.SetDeadline(time.Unix(1, 0))
 
 	pollTicker := time.NewTicker(pollFrequency)
+	fmt.Println("pollFrequency: ", pollFrequency)
 
 	var lostEventsCount, readErrorCount, noDataCount atomic.Uint64
 	go func() {
@@ -165,9 +168,12 @@ func startPollingPerfEventMonitor(ctx context.Context, perfEventMap *ebpf.Map,
 				break PollLoop
 			}
 
+			fmt.Println("PollLoop ticked")
+
 			// Eagerly read events until the buffer is exhausted.
 			for {
 				if err = eventReader.ReadInto(&data); err != nil {
+					fmt.Println(err.Error())
 					if !errors.Is(err, os.ErrDeadlineExceeded) {
 						readErrorCount.Add(1)
 					}

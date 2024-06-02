@@ -136,6 +136,7 @@ ErrorCode push_error(Trace *trace, ErrorCode error) {
 // Send a trace to user-land via the `trace_events` perf event buffer.
 static inline __attribute__((__always_inline__))
 void send_trace(void *ctx, Trace *trace) {
+  DEBUG_PRINT("send_trace");
   const u64 num_empty_frames = (MAX_FRAME_UNWINDS - trace->stack_len);
   const u64 send_size = sizeof(Trace) - sizeof(Frame) * num_empty_frames;
 
@@ -145,6 +146,7 @@ void send_trace(void *ctx, Trace *trace) {
 
   extern bpf_map_def trace_events;
   bpf_perf_event_output(ctx, &trace_events, BPF_F_CURRENT_CPU, trace, send_size);
+  DEBUG_PRINT("send_trace success");
 }
 
 // Send immediate notifications for event triggers to Go.

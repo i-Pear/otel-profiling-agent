@@ -745,7 +745,7 @@ static inline ErrorCode get_usermode_regs(struct pt_regs *ctx,
   return ERR_OK;
 }
 
-SEC("perf_event/unwind_native")
+SEC("kprobe/unwind_native")
 int unwind_native(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record)
@@ -851,7 +851,15 @@ exit:
   return -1;
 }
 
-SEC("perf_event/native_tracer_entry")
-int native_tracer_entry(struct bpf_perf_event_data *ctx) {
-  return collect_trace((struct pt_regs*) &ctx->regs);
+SEC("kprobe/cap_capable")
+int native_tracer_entry(struct pt_regs *ctx) {
+  printt("native_tracer_entry: entered");
+  collect_trace(ctx);
+  return 0;
 }
+
+//SEC("perf_event/native_tracer_entry")
+//int native_tracer_entry(struct bpf_perf_event_data *ctx) {
+//  printt("native_tracer_entry: entered");
+//  return collect_trace((struct pt_regs*) &ctx->regs);
+//}

@@ -41,7 +41,7 @@ FLAGS=$(TARGET_FLAGS) \
 	-Wno-unused-parameter \
 	-Wno-sign-compare \
 	-fno-stack-protector \
-	-fno-jump-tables
+	-fno-jump-tables -DOPTI_DEBUG -g
 
 SRCS := $(wildcard *.ebpf.c)
 OBJS := $(SRCS:.c=.o)

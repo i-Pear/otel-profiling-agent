@@ -263,7 +263,7 @@ ErrorCode get_PyFrame(struct pt_regs *ctx, const PyProcInfo *pyinfo, void **fram
 // unwind_python is the entry point for tracing when invoked from the native tracer
 // or interpreter dispatcher. It does not reset the trace object and will append the
 // Python stack frames to the trace object for the current CPU.
-SEC("perf_event/unwind_python")
+SEC("kprobe/unwind_python")
 int unwind_python(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record)

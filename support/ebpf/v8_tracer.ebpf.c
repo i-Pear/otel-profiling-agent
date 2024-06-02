@@ -281,7 +281,7 @@ frame_done:
 // unwind_v8 is the entry point for tracing when invoked from the native tracer
 // or interpreter dispatcher. It does not reset the trace object and will append the
 // V8 stack frames to the trace object for the current CPU.
-SEC("perf_event/unwind_v8")
+SEC("kprobe/unwind_v8")
 int unwind_v8(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record) {

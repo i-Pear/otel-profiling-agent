@@ -213,7 +213,7 @@ save_state:
   return ERR_OK;
 }
 
-SEC("perf_event/unwind_ruby")
+SEC("kprobe/unwind_ruby")
 int unwind_ruby(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record)

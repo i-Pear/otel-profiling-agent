@@ -1,6 +1,7 @@
 FROM debian:testing
 
 WORKDIR /agent
+ENV GOPROXY="https://goproxy.cn,direct"
 
 ARG arch=amd64
 

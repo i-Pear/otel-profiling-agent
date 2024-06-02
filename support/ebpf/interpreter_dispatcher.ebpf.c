@@ -118,7 +118,7 @@ bpf_map_def SEC("maps") trace_events = {
 
 // End shared maps
 
-SEC("perf_event/unwind_stop")
+SEC("kprobe/unwind_stop")
 int unwind_stop(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record)

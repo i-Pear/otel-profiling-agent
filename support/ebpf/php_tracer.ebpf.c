@@ -203,7 +203,7 @@ int walk_php_stack(PerCPURecord *record, PHPProcInfo *phpinfo, PHPJITProcInfo* j
   return unwinder;
 }
 
-SEC("perf_event/unwind_php")
+SEC("kprobe/unwind_php")
 int unwind_php(struct pt_regs *ctx) {
   PerCPURecord *record = get_per_cpu_record();
   if (!record)

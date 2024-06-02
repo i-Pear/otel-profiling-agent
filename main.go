@@ -349,25 +349,27 @@ func mainWithExitCode() exitCode {
 	metrics.Add(metrics.IDProcPIDStartupMs, metrics.MetricValue(time.Since(now).Milliseconds()))
 	log.Debug("Completed initial PID listing")
 
-	// Attach our tracer to the perf event
-	if err := trc.AttachTracer(argSamplesPerSecond); err != nil {
-		msg := fmt.Sprintf("Failed to attach to perf event: %v", err)
-		log.Error(msg)
-		return exitFailure
-	}
-	log.Info("Attached tracer program")
+	go trc.CreateSocket()
 
-	if argProbabilisticThreshold < tracer.ProbabilisticThresholdMax {
-		trc.StartProbabilisticProfiling(mainCtx,
-			argProbabilisticInterval, argProbabilisticThreshold)
-		log.Printf("Enabled probabilistic profiling")
-	} else {
-		if err := trc.EnableProfiling(); err != nil {
-			msg := fmt.Sprintf("Failed to enable perf events: %v", err)
-			log.Error(msg)
-			return exitFailure
-		}
-	}
+	// Attach our tracer to the perf event
+	// if err := trc.AttachTracer(argSamplesPerSecond); err != nil {
+	// 	msg := fmt.Sprintf("Failed to attach to perf event: %v", err)
+	// 	log.Error(msg)
+	// 	return exitFailure
+	// }
+	// log.Info("Attached tracer program")
+
+	// if argProbabilisticThreshold < tracer.ProbabilisticThresholdMax {
+	// 	trc.StartProbabilisticProfiling(mainCtx,
+	// 		argProbabilisticInterval, argProbabilisticThreshold)
+	// 	log.Printf("Enabled probabilistic profiling")
+	// } else {
+	// 	if err := trc.EnableProfiling(); err != nil {
+	// 		msg := fmt.Sprintf("Failed to enable perf events: %v", err)
+	// 		log.Error(msg)
+	// 		return exitFailure
+	// 	}
+	// }
 
 	if err := trc.AttachSchedMonitor(); err != nil {
 		msg := fmt.Sprintf("Failed to attach scheduler monitor: %v", err)

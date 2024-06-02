@@ -62,7 +62,7 @@ func trimMappingPath(path string) string {
 	return path
 }
 
-func parseMappings(mapsFile io.Reader) ([]Mapping, error) {
+func parseMappings(mapsFile io.Reader, pid libpf.PID) ([]Mapping, error) {
 	mappings := make([]Mapping, 0)
 	scanner := bufio.NewScanner(mapsFile)
 	buf := make([]byte, 512)
@@ -118,7 +118,7 @@ func parseMappings(mapsFile io.Reader) ([]Mapping, error) {
 				continue
 			}
 		} else {
-			path = trimMappingPath(path)
+			path = "/proc/" + string(pid) + "/root/" + trimMappingPath(path)
 			path = strings.Clone(path)
 		}
 
@@ -148,7 +148,7 @@ func (sp *systemProcess) GetMappings() ([]Mapping, error) {
 	}
 	defer mapsFile.Close()
 
-	mappings, err := parseMappings(mapsFile)
+	mappings, err := parseMappings(mapsFile, sp.pid)
 	if err == nil {
 		fileToMapping := make(map[string]*Mapping)
 		for idx := range mappings {
@@ -201,7 +201,7 @@ func (sp *systemProcess) GetMappingFile(m *Mapping) string {
 
 // vdsoFileID caches the VDSO FileID. This assumes there is single instance of
 // VDSO for the system.
-var vdsoFileID libpf.FileID = libpf.UnsymbolizedFileID
+var vdsoFileID = libpf.UnsymbolizedFileID
 
 func (sp *systemProcess) CalculateMappingFileID(m *Mapping) (libpf.FileID, error) {
 	if m.IsVDSO() {

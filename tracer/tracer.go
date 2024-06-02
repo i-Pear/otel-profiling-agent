@@ -13,8 +13,11 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"net"
+	"os"
 	"strings"
 	"sync/atomic"
+	"syscall"
 	"time"
 	"unsafe"
 
@@ -24,6 +27,7 @@ import (
 	"github.com/elastic/go-perf"
 	log "github.com/sirupsen/logrus"
 	"github.com/zeebo/xxh3"
+	"golang.org/x/sys/unix"
 
 	"github.com/elastic/otel-profiling-agent/config"
 	"github.com/elastic/otel-profiling-agent/host"
@@ -64,6 +68,8 @@ const (
 	probProfilingEnable  = 1
 	probProfilingDisable = -1
 )
+
+const socketPath = "/tmp/otel-native_tracer_entry.sock"
 
 // Intervals is a subset of config.IntervalsAndTimers.
 type Intervals interface {
@@ -550,6 +556,12 @@ func loadUnwinders(coll *cebpf.CollectionSpec, ebpfProgs map[string]*cebpf.Progr
 		unwinder, err := cebpf.NewProgramWithOptions(coll.Programs[unwindProg.name],
 			programOptions)
 		if err != nil {
+			var verr *cebpf.VerifierError
+			if errors.As(err, &verr) {
+				for _, s := range verr.Log {
+					fmt.Println(s)
+				}
+			}
 			// These errors tend to have hundreds of lines, so we print each line individually.
 			scanner := bufio.NewScanner(strings.NewReader(err.Error()))
 			for scanner.Scan() {
@@ -684,10 +696,10 @@ func (t *Tracer) reportFallbackKernelSymbol(
 		// should be sufficient for the time being. Other machines may succeed, and it's no big deal
 		// if we can't deliver 100% of symbols.
 		t.transmittedFallbackSymbols.Add(frameID, libpf.Void{})
-		(*kernelSymbolCacheMiss)++
+		*kernelSymbolCacheMiss++
 		return
 	}
-	(*kernelSymbolCacheHit)++
+	*kernelSymbolCacheHit++
 }
 
 // enableEvent removes the entry of given eventType from the inhibitEvents map
@@ -1013,6 +1025,55 @@ func (t *Tracer) StartMapMonitors(ctx context.Context, traceOutChan chan *host.T
 	})
 
 	return nil
+}
+
+func getConnFd(conn syscall.Conn) (connFd int, err error) {
+	var rawConn syscall.RawConn
+	rawConn, err = conn.SyscallConn()
+	if err != nil {
+		return
+	}
+
+	err = rawConn.Control(func(fd uintptr) {
+		connFd = int(fd)
+	})
+	return
+}
+
+func (t *Tracer) CreateSocket() error {
+	tracerProg, ok := t.ebpfProgs["native_tracer_entry"]
+	if !ok {
+		return fmt.Errorf("entry program is not available")
+	}
+
+	os.Remove(socketPath)
+	addr, err := net.ResolveUnixAddr("unix", socketPath)
+	if err != nil {
+		return err
+	}
+
+	listener, err := net.ListenUnix("unix", addr)
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(socketPath)
+
+	fmt.Println("Server is listening on " + socketPath)
+
+	for {
+		conn, err := listener.AcceptUnix()
+		if err != nil {
+			return err
+		}
+		defer conn.Close()
+
+		fd := tracerProg.FD()
+		rights := unix.UnixRights(fd)
+		if _, _, err := conn.WriteMsgUnix(nil, rights, nil); err != nil {
+			return err
+		}
+		fmt.Println("File descriptor sent")
+	}
 }
 
 // AttachTracer attaches the main tracer entry point to the perf interrupt events. The tracer
